@@ -8,8 +8,9 @@ companies = pd.read_excel(
     skiprows=7
     )
 
-#Cria uma coluna de ID para os fornecedores
+#Cria as colunas ID e preferencial para os fornecedores
 companies["supplier_id"] = [str(uuid.uuid4()) for _ in range(len(companies))]
+companies["preferred_supplier"] = False
 
 #Define quais colunas vão para cada tabela
 supplierColumns = ["supplier_id", "Empresa", "CNPJ", "Localização", "Representante", "Contato", "Email", "Site", "Descrição"]
