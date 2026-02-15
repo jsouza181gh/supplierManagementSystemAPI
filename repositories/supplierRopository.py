@@ -10,8 +10,9 @@ def createSupplier(
         newPhoneNumber : str,
         newEmail : str,
         newSite : str,
-        newDescription : str
-        ):
+        newDescription : str,
+        itemIds : list[str] = None
+    ):
     newSupplier = Supplier(
         name = newName,
         cnpj = newCnpj,
@@ -22,8 +23,13 @@ def createSupplier(
         site = newSite,
         description = newDescription
     )
+
+    if itemIds:
+        newSupplier.items = loadItems(itemIds)
+
     session.add(newSupplier)
     session.commit()
+    return newSupplier
 
 def findSupplierById(supplierId : str):
     supplier = (
@@ -31,7 +37,7 @@ def findSupplierById(supplierId : str):
         .query(Supplier)
         .filter_by(id=supplierId)
         .first()
-        )
+    )
     return supplier
 
 def updateSupplier(
@@ -46,7 +52,7 @@ def updateSupplier(
         newDescription : str,
         isPreferred : bool,
         itemIds : list[str] = None
-        ):
+    ):
     
     supplier = findSupplierById(supplierId)
     supplier.name = newName
@@ -64,6 +70,7 @@ def updateSupplier(
 
     session.add(supplier)
     session.commit()
+    return supplier
 
 def deleteSupplier(supplierId : str):
     supplier = findSupplierById(supplierId)

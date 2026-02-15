@@ -4,15 +4,21 @@ from entities.supplier import Supplier
 
 def createItem(
         newName : str, 
-        newCategory : str
-        ):
+        newCategory : str,
+        supplierIds : list[str] = None
+    ):
     
     newItem = Item(
         name = newName,
         category = newCategory
     )
+
+    if supplierIds:
+        newItem.suppliers = loadSuppliers(supplierIds)
+
     session.add(newItem)
     session.commit()
+    return newItem
 
 def findItemById(itemId : str):
     item = (
@@ -20,7 +26,7 @@ def findItemById(itemId : str):
         .query(Item)
         .filter_by(id=itemId)
         .first()
-        )
+    )
     return item
 
 def updateItem(
@@ -28,7 +34,7 @@ def updateItem(
         newName : str, 
         newCategory : str,
         supplierIds : list[str] = None
-        ):
+    ):
     
     item = findItemById(itemId)
     item.name = newName
@@ -39,6 +45,7 @@ def updateItem(
 
     session.add(item)
     session.commit()
+    return item
 
 def deleteItem(itemId : str):
     item = findItemById(itemId)

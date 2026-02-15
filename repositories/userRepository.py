@@ -6,13 +6,13 @@ def createUser(
         newLastName : str,
         newEmail : str,
         newPassword : str
-):
+    ):
     newUser = User(
         name = newName,
         lastName = newLastName,
         email = newEmail,
         password = newPassword
-        )
+    )
     session.add(newUser)
     session.commit()
 
@@ -31,7 +31,7 @@ def updateUser(
         newLastName : str,
         newEmail : str,
         newPassword : str
-):
+    ):
     user = findUserById(userId)
     user.name = newName
     user.lastName = newLastName
@@ -40,6 +40,7 @@ def updateUser(
 
     session.add(user)
     session.commit()
+    return user
 
 
 def deleteUser(userId : str):
