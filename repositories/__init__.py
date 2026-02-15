@@ -1,5 +1,5 @@
-from .itemRepository import createItem, findItemById, updateItem, deleteItem
-from .supplierRopository import createSupplier, findSupplierById, updateSupplier, deleteSupplier
+from .itemRepository import createItem, findItemById, updateItem, deleteItem, loadSuppliers
+from .supplierRopository import createSupplier, findSupplierById, updateSupplier, deleteSupplier, loadItems
 from .userRepository import createUser, findUserById, updateUser, deleteUser
 
 __all__ = [
@@ -14,5 +14,7 @@ __all__ = [
     "createUser",
     "findUserById",
     "updateUser",
-    "deleteUser"
+    "deleteUser",
+    "loadSuppliers",
+    "loadItems"
 ]
