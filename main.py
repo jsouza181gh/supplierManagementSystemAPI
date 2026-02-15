@@ -1,6 +1,12 @@
+from flask import Flask
+from controllers import blueprints
 from database import createDataBase
-from services import userService
+
+app = Flask(__name__)
+
+for blueprint in blueprints:
+    app.register_blueprint(blueprint)
 
 if __name__ == "__main__":
     createDataBase()
-    userService.deleteUser("d6119e31-cbd2-4368-ac87-3a04a328e676")
+    app.run(debug=True)
