@@ -1,6 +1,8 @@
 from database import Base
 from sqlalchemy import Column, String, Boolean, text
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+from entities.item_supplier import item_supplier
 
 class Supplier(Base):
     __tablename__ = "suppliers"
@@ -14,6 +16,12 @@ class Supplier(Base):
     site = Column("site", String(255))
     description = Column("description", String(255), nullable=False)
     preferredSupplier = Column("preferred_supplier", Boolean, nullable=False, default=False)
+
+    items = relationship(
+        "Item",
+        secondary=item_supplier,
+        back_populates="suppliers"
+    )
 
     def __init__(self, name, cnpj, location, representative, phoneNumber, email, site, description):
         self.name = name
