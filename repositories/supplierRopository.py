@@ -1,6 +1,6 @@
 from database import session
-from entities import Supplier
-from entities import Item
+from entities.supplier import Supplier
+from entities.item import Item
 
 def createSupplier(
         newName : str,

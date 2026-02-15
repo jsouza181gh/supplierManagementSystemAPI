@@ -1,4 +1,4 @@
-from entities import User
+from entities.user import User
 from database import session
 
 def createUser(

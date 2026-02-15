@@ -23,3 +23,10 @@ Session = sessionmaker(
 
 session = Session()
 Base = declarative_base()
+
+from entities.user import User
+from entities.supplier import Supplier
+from entities.item import Item
+
+def createDataBase():
+    Base.metadata.create_all(engine)
