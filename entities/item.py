@@ -7,7 +7,7 @@ from entities.item_supplier import item_supplier
 class Item(Base):
     __tablename__ = "items"
     id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
-    name = Column("name", String(100), nullable=False)
+    name = Column("name", String(100), nullable=False, unique=True)
     category = Column("category", String(100))
 
     suppliers = relationship(
