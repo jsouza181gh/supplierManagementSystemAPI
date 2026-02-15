@@ -8,13 +8,13 @@ class Supplier(Base):
     __tablename__ = "suppliers"
     id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
     name = Column("name", String(100), nullable=False)
-    cnpj = Column("cnpj", String(100), unique=True, nullable=False)
+    cnpj = Column("cnpj", String(100), unique=True)
     location = Column("location", String(100), nullable=False)
-    representative = Column("representative", String(100), nullable=False)
-    phoneNumber = Column("phone_number", String(100), nullable=False)
-    email = Column("email", String(100), nullable=False)
+    representative = Column("representative", String(100))
+    phoneNumber = Column("phone_number", String(100))
+    email = Column("email", String(100))
     site = Column("site", String(255))
-    description = Column("description", String(255), nullable=False)
+    description = Column("description", String(255))
     preferredSupplier = Column("preferred_supplier", Boolean, nullable=False, default=False)
 
     items = relationship(
