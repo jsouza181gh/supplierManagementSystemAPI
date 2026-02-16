@@ -23,11 +23,11 @@ def createSupplier(
         newDescription,
         itemIds
     )
-    return newSupplier
+    return createDTO(newSupplier)
 
 def findSupplierById(supplierId : str):
     supplier = supplierRopository.findSupplierById(supplierId)
-    return supplier
+    return createDTO(supplier)
 
 def updateSupplier(
         supplierId : str,
@@ -56,7 +56,31 @@ def updateSupplier(
         isPreferred,
         itemIds
     )
-    return supplier
+    return createDTO(supplier)
 
 def deleteSupplier(supplierId : str):
     supplierRopository.deleteSupplier(supplierId)
+
+def createDTO(supplier):
+    return {
+        "id" : str(supplier.id),
+        "name" : supplier.name,
+        "cnpj" : supplier.cnpj,
+        "location" : supplier.location,
+        "representative" : supplier.representative,
+        "phoneNumber" : supplier.phoneNumber,
+        "email" : supplier.email,
+        "site" : supplier.site,
+        "description" : supplier.description,
+        "isPreferred" : supplier.preferredSupplier,
+        "items" : list(
+            map(
+                lambda x : {
+                    "id" : str(x.id), 
+                    "item" : x.name,
+                    "category" : x.category
+                },
+                supplier.items
+            )
+        )
+    }

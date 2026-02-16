@@ -15,6 +15,7 @@ def createUser(
     )
     session.add(newUser)
     session.commit()
+    return newUser
 
 def findUserById(userId : str):
     user = (

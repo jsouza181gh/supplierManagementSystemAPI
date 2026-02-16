@@ -1,22 +1,49 @@
 from flask import Blueprint, request, jsonify
 from services import supplierService
 
-supplierBlueprint = Blueprint("supplier", __name__, url_prefix="/api/supplier")
+supplierBlueprint = Blueprint("supplier", __name__, url_prefix="/api/suppliers")
 
 @supplierBlueprint.route("/", methods=["POST"])
 def createSupplier():
-    data = request.get_json()
-    pass
+    requestData = request.get_json()
+    newSupplier = supplierService.createSupplier(
+        requestData.get("name"), 
+        requestData.get("cnpj"), 
+        requestData.get("location"), 
+        requestData.get("representative"), 
+        requestData.get("phoneNumber"), 
+        requestData.get("email"), 
+        requestData.get("site"), 
+        requestData.get("description"),
+        requestData.get("itemIds")
+    )
+    return jsonify(newSupplier), 201
 
 @supplierBlueprint.route("/<supplierId>", methods=["GET"])
 def getSupplier(supplierId):
-    pass
+    supplier = supplierService.findSupplierById(supplierId)
+    return jsonify(supplier), 200
 
 @supplierBlueprint.route("/<supplierId>", methods=["PUT"])
 def updateSupplier(supplierId):
-    data = request.get_json()
-    pass
+    requestData = request.get_json()
+    supplier = supplierService.updateSupplier(
+        supplierId,
+        requestData.get("name"), 
+        requestData.get("cnpj"), 
+        requestData.get("location"), 
+        requestData.get("representative"), 
+        requestData.get("phoneNumber"), 
+        requestData.get("email"), 
+        requestData.get("site"), 
+        requestData.get("description"),
+        requestData.get("itemIds"),
+        requestData.get("isPreferred")
+    )
+    return jsonify(supplier), 200
+
 
 @supplierBlueprint.route("/<supplierId>", methods=["DELETE"])
 def deleteSupplier(supplierId):
-    pass
+    supplierService.deleteSupplier(supplierId)
+    return "", 204

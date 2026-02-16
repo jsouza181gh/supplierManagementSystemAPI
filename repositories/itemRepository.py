@@ -13,7 +13,7 @@ def createItem(
         category = newCategory
     )
 
-    if supplierIds:
+    if supplierIds is not None:
         newItem.suppliers = loadSuppliers(supplierIds)
 
     session.add(newItem)
@@ -40,7 +40,7 @@ def updateItem(
     item.name = newName
     item.category = newCategory
 
-    if supplierIds:
+    if supplierIds is not None:
         item.suppliers = loadSuppliers(supplierIds)
 
     session.add(item)

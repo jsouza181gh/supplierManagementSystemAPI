@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services import itemService
 
-itemBlueprint = Blueprint("items", __name__, url_prefix="/api/items")
+itemBlueprint = Blueprint("item", __name__, url_prefix="/api/items")
 
 @itemBlueprint.route("/", methods=["POST"])
 def createItem():
@@ -9,7 +9,7 @@ def createItem():
     newItem = itemService.createItem(
         requestData.get("name"),
         requestData.get("category"),
-        requestData.get("suppliers",[])
+        requestData.get("supplierIds",[])
     )    
     return jsonify(newItem), 201
 
@@ -25,7 +25,7 @@ def updateItem(itemId):
         itemId,
         requestData.get("name"),
         requestData.get("category"),
-        requestData.get("suppliers",[])
+        requestData.get("supplierIds")
     )
     return jsonify(item), 200
 
