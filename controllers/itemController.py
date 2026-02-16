@@ -20,7 +20,12 @@ def getItem(itemId):
 
 @itemBlueprint.route("/", methods=["GET"])
 def loadItens():
-    items = itemService.loadItems()
+    params = request.args
+    items = itemService.loadItems(
+        int(params.get("page", 1)),
+        int(params.get("limit", 10)),
+        params.get("search")
+    )
     return jsonify(items), 200
 
 @itemBlueprint.route("/<itemId>", methods=["PUT"])

@@ -1,7 +1,7 @@
 from database import session
 from entities.item import Item
 from entities.supplier import Supplier
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_, and_
 
 def createItem(
         newName : str, 
@@ -32,26 +32,43 @@ def findItemById(itemId : str):
 
 def loadItems(
         page : int =1,
-        limit : int = 10
+        limit : int = 10,
+        search : str = None
         ):
+    
+    conditions = []
+    baseQuery = select(Item)
     offset = (page - 1) * limit
-    rowsCount = (
-        session
-        .execute(
-            select(func.count())
-            .select_from(Item)
+
+    if search is not None:
+        terms = search.lower().split()
+        for term in terms:
+            conditions.append(
+                or_(
+                    Item.name.ilike(f"%{term}%"),
+                    Item.category.ilike(f"%{term}%")
+                )
             )
-        .scalar()
+        baseQuery = baseQuery.where(and_(*conditions))
+
+    rowsCount = (
+        session 
+        .execute(
+            select(func.count()) 
+            .select_from(baseQuery.subquery())
         )
+        .scalar() 
+    )
+    query = (
+        baseQuery
+        .order_by(Item.name)
+        .offset(offset)
+        .limit(limit)
+    )
 
     items = (
         session
-        .execute(
-            select(Item)
-            .order_by(Item.name)
-            .offset(offset)
-            .limit(limit)
-        )
+        .execute(query)
         .scalars()
         .all()
     )

@@ -19,12 +19,12 @@ def findItemById(itemId : str):
 
 def loadItems(
         page : int = 1,
-        limit : int =10
+        limit : int =10,
+        search : str = None
     ):
 
-    items, rows = itemRepository.loadItems(page, limit)
-    items = list(map(createDTO, items))
-    return items, rows
+    items, rows = itemRepository.loadItems(page, limit, search)
+    return list(map(createDTO, items)), rows
 
 def updateItem(
         itemId : str,
