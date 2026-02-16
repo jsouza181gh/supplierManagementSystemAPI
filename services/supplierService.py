@@ -29,6 +29,15 @@ def findSupplierById(supplierId : str):
     supplier = supplierRopository.findSupplierById(supplierId)
     return createDTO(supplier)
 
+def loadSuppliers(
+        page : int = 1,
+        limit : int =10
+    ):
+
+    suppliers, rowsCount = supplierRopository.loadSuppliers(page, limit)
+    suppliers = list(map(createDTO, suppliers))
+    return suppliers, rowsCount
+
 def updateSupplier(
         supplierId : str,
         newName : str,

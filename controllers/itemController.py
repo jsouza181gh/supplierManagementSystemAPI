@@ -18,6 +18,11 @@ def getItem(itemId):
     item = itemService.findItemById(itemId)
     return jsonify(item), 200
 
+@itemBlueprint.route("/", methods=["GET"])
+def loadItens():
+    items = itemService.loadItems()
+    return jsonify(items), 200
+
 @itemBlueprint.route("/<itemId>", methods=["PUT"])
 def updateItem(itemId):
     requestData = request.get_json()

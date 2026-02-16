@@ -1,6 +1,7 @@
 from database import session
-from entities.supplier import Supplier
 from entities.item import Item
+from entities.supplier import Supplier
+from sqlalchemy import select, func
 
 def createSupplier(
         newName : str,
@@ -39,6 +40,36 @@ def findSupplierById(supplierId : str):
         .first()
     )
     return supplier
+
+def loadSuppliers(
+        page : int =1,
+        limit : int = 10
+        ):
+    offset = (page - 1) * limit
+    rowsCount = (
+        session
+        .execute(
+            select(func.count())
+            .select_from(Supplier)
+            )
+            .scalar()
+        )
+
+    suppliers = (
+        session
+        .execute(
+            select(Supplier)
+            .order_by(
+                Supplier.preferredSupplier.desc(),
+                Supplier.name.asc()
+            )
+            .offset(offset)
+            .limit(limit)
+        )
+        .scalars()
+        .all()
+    )
+    return suppliers, rowsCount
 
 def updateSupplier(
         supplierId : str,

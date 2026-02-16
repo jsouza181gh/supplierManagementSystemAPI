@@ -17,6 +17,15 @@ def findItemById(itemId : str):
     item = itemRepository.findItemById(itemId)
     return createDTO(item)
 
+def loadItems(
+        page : int = 1,
+        limit : int =10
+    ):
+
+    items, rows = itemRepository.loadItems(page, limit)
+    items = list(map(createDTO, items))
+    return items, rows
+
 def updateItem(
         itemId : str,
         newName : str,

@@ -24,6 +24,11 @@ def getSupplier(supplierId):
     supplier = supplierService.findSupplierById(supplierId)
     return jsonify(supplier), 200
 
+@supplierBlueprint.route("/", methods=["GET"])
+def loadSuppliers():
+    suppliers = supplierService.loadSuppliers()
+    return jsonify(suppliers), 200
+
 @supplierBlueprint.route("/<supplierId>", methods=["PUT"])
 def updateSupplier(supplierId):
     requestData = request.get_json()

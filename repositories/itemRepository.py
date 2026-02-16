@@ -1,6 +1,7 @@
 from database import session
 from entities.item import Item
 from entities.supplier import Supplier
+from sqlalchemy import select, func
 
 def createItem(
         newName : str, 
@@ -28,6 +29,33 @@ def findItemById(itemId : str):
         .first()
     )
     return item
+
+def loadItems(
+        page : int =1,
+        limit : int = 10
+        ):
+    offset = (page - 1) * limit
+    rowsCount = (
+        session
+        .execute(
+            select(func.count())
+            .select_from(Item)
+            )
+        .scalar()
+        )
+
+    items = (
+        session
+        .execute(
+            select(Item)
+            .order_by(Item.name)
+            .offset(offset)
+            .limit(limit)
+        )
+        .scalars()
+        .all()
+    )
+    return items, rowsCount
 
 def updateItem(
         itemId : str, 
