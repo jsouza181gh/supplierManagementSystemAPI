@@ -1,18 +1,30 @@
 from services import documentService
+from schemas.documentSchema import DocumentSchema
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from pydantic import ValidationError
 
 documentBlueprint = Blueprint("document", __name__, url_prefix="/documents")
 
 @documentBlueprint.route("/", methods=["POST"])
 @jwt_required()
 def createDocument():
-    requestData = request.get_json()
+    try:
+        validDocument = DocumentSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     document = documentService.createDocument(
-        requestData.get("name"),
-        requestData.get("path"),
-        requestData.get("category"),
-        requestData.get("supplierId"),
+       validDocument.name,
+       validDocument.path,
+       validDocument.category,
+       validDocument.supplierId,
     )
     return jsonify(document), 201
 
@@ -35,12 +47,22 @@ def loadDocuments():
 @documentBlueprint.route("/<documentId>", methods=["PUT"])
 @jwt_required()
 def updateDocument(documentId):
-    requestData = request.get_json()
+    try:
+        validDocument = DocumentSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     document = documentService.updateDocument(
         documentId,
-        requestData.get("name"),
-        requestData.get("path"),
-        requestData.get("category")
+        validDocument.name,
+        validDocument.path,
+        validDocument.category
     )
     return jsonify(document), 200
 

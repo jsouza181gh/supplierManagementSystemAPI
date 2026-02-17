@@ -1,17 +1,29 @@
 from services import itemService
+from schemas.itemSchema import ItemSchema
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from pydantic import ValidationError
 
 itemBlueprint = Blueprint("item", __name__, url_prefix="/items")
 
 @itemBlueprint.route("/", methods=["POST"])
 @jwt_required()
 def createItem():
-    requestData = request.get_json()
+    try:
+        validItem = ItemSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     newItem = itemService.createItem(
-        requestData.get("name"),
-        requestData.get("category"),
-        requestData.get("supplierIds",[])
+        validItem.name,
+        validItem.category,
+        validItem.supplierIds
     )    
     return jsonify(newItem), 201
 
@@ -35,12 +47,22 @@ def loadItens():
 @itemBlueprint.route("/<itemId>", methods=["PUT"])
 @jwt_required()
 def updateItem(itemId):
-    requestData = request.get_json()
+    try:
+        validItem = ItemSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     item = itemService.updateItem(
         itemId,
-        requestData.get("name"),
-        requestData.get("category"),
-        requestData.get("supplierIds")
+        validItem.name,
+        validItem.category,
+        validItem.supplierIds
     )
     return jsonify(item), 200
 

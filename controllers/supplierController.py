@@ -1,23 +1,35 @@
 from services import supplierService
+from schemas.supplierSchema import SupplierSchema
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from pydantic import ValidationError
 
 supplierBlueprint = Blueprint("supplier", __name__, url_prefix="/suppliers")
 
 @supplierBlueprint.route("/", methods=["POST"])
 @jwt_required()
 def createSupplier():
-    requestData = request.get_json()
+    try:
+        validSupplier = SupplierSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     newSupplier = supplierService.createSupplier(
-        requestData.get("name"), 
-        requestData.get("cnpj"), 
-        requestData.get("location"), 
-        requestData.get("representative"), 
-        requestData.get("phoneNumber"), 
-        requestData.get("email"), 
-        requestData.get("site"), 
-        requestData.get("description"),
-        requestData.get("itemIds")
+        validSupplier.name, 
+        validSupplier.cnpj, 
+        validSupplier.location, 
+        validSupplier.representative, 
+        validSupplier.phoneNumber, 
+        validSupplier.email, 
+        str(validSupplier.site), 
+        validSupplier.description,
+        validSupplier.itemIds
     )
     return jsonify(newSupplier), 201
 
@@ -40,22 +52,31 @@ def loadSuppliers():
 @supplierBlueprint.route("/<supplierId>", methods=["PUT"])
 @jwt_required()
 def updateSupplier(supplierId):
-    requestData = request.get_json()
+    try:
+        validSupplier = SupplierSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     supplier = supplierService.updateSupplier(
         supplierId,
-        requestData.get("name"), 
-        requestData.get("cnpj"), 
-        requestData.get("location"), 
-        requestData.get("representative"), 
-        requestData.get("phoneNumber"), 
-        requestData.get("email"), 
-        requestData.get("site"), 
-        requestData.get("description"),
-        requestData.get("itemIds"),
-        requestData.get("isPreferred")
+        validSupplier.name,
+        validSupplier.cnpj,
+        validSupplier.location,
+        validSupplier.representative,
+        validSupplier.phoneNumber,
+        validSupplier.email,
+        str(validSupplier.site),
+        validSupplier.description,
+        validSupplier.itemIds,
+        validSupplier.isPreferred
     )
     return jsonify(supplier), 200
-
 
 @supplierBlueprint.route("/<supplierId>", methods=["DELETE"])
 @jwt_required()

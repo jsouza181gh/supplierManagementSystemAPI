@@ -1,26 +1,48 @@
 from services import userService
+from schemas.userSchema import UserSchema, LoginSchema
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from pydantic import ValidationError
 
 userBlueprint = Blueprint("user", __name__, url_prefix="/users")
 
 @userBlueprint.route("/register", methods=["POST"])
 def createUser():
-    requestData = request.get_json()
-    acessToken = userService.createUser(
-        requestData.get("name"),
-        requestData.get("lastName"),
-        requestData.get("email"),
-        requestData.get("password")
+    try:
+        validUser = UserSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+
+    newAcessToken = userService.createUser(
+        validUser.name,
+        validUser.lastName,
+        validUser.email,
+        validUser.password
     )
-    return jsonify(acessToken), 201
+    return jsonify(acessToken=newAcessToken), 201
 
 @userBlueprint.route("/login", methods=["POST"])
 def login():
-    requestData = request.get_json()
+    try:
+        validLogin = LoginSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
     validatedToken = userService.validateLogin(
-        requestData.get("email"),
-        requestData.get("password")
+        validLogin.email,
+        validLogin.password
     )
     
     if validatedToken[1] in [401, 404]:
@@ -29,27 +51,44 @@ def login():
     
     return jsonify(acessToken=validatedToken), 200
 
-@userBlueprint.route("/<userId>", methods=["GET"])
+@userBlueprint.route("/", methods=["GET"])
 @jwt_required()
-def getUser(userId):
-    user = userService.findUserById(userId),
+def getUser():
+    userId = get_jwt_identity()
+    user = userService.findUserById(userId)
     return jsonify(user), 200
 
-@userBlueprint.route("/<userId>", methods=["PUT"])
+@userBlueprint.route("/", methods=["PUT"])
 @jwt_required()
-def updateUser(userId):
-    requestData = request.get_json()
+def updateUser():
+    try:
+        validUser = UserSchema(**request.get_json())
+    except ValidationError as e:
+        return jsonify(
+            {
+                "errors" : e.errors(
+                    include_context=False
+                )
+            }
+        ), 400
+    
+    userId = get_jwt_identity()
     user = userService.updateUser(
         userId,
-        requestData.get("name"),
-        requestData.get("lastName"),
-        requestData.get("email"),
-        requestData.get("password")
+        validUser.name,
+        validUser.lastName,
+        validUser.email,
+        validUser.password
     )
     return jsonify(user), 200
 
-@userBlueprint.route("/<userId>", methods=["DELETE"])
+@userBlueprint.route("/", methods=["DELETE"])
 @jwt_required()
-def deleteUser(userId):
+def deleteUser():
+    params = request.args
+    if params.get("userId"):
+        userId = params.get("userId")
+    else:
+        userId = get_jwt_identity()
     userService.deleteUser(userId)
     return "", 204
