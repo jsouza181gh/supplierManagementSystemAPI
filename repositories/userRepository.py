@@ -1,5 +1,5 @@
-from entities.user import User
 from database import session
+from entities.user import User
 
 def createUser(
         newName : str,

@@ -23,6 +23,12 @@ class Supplier(Base):
         back_populates="suppliers"
     )
 
+    documents = relationship(
+        "Document",
+        back_populates="supplier",
+        cascade="all, delete-orphan"
+    )
+
     def __init__(self, name, cnpj, location, representative, phoneNumber, email, site, description):
         self.name = name
         self.cnpj = cnpj

@@ -27,6 +27,7 @@ Base = declarative_base()
 from entities.user import User
 from entities.supplier import Supplier
 from entities.item import Item
+from entities.document import Document
 
 def createDataBase():
     Base.metadata.create_all(engine)
