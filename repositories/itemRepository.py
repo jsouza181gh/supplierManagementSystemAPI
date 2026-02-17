@@ -8,18 +8,20 @@ def createItem(
         newCategory : str,
         supplierIds : list[str] = None
     ):
-    
     newItem = Item(
         name = newName,
         category = newCategory
     )
-
-    if supplierIds is not None:
+    if supplierIds:
         newItem.suppliers = loadSuppliers(supplierIds)
 
-    session.add(newItem)
-    session.commit()
-    return newItem
+    try:
+        session.add(newItem)
+        session.commit()
+        return newItem
+    except:
+        session.rollback()
+        raise
 
 def findItemById(itemId : str):
     item = (
@@ -34,13 +36,12 @@ def loadItems(
         page : int =1,
         limit : int = 10,
         search : str = None
-        ):
-    
+    ):
     conditions = []
     baseQuery = select(Item)
     offset = (page - 1) * limit
 
-    if search is not None:
+    if search:
         terms = search.lower().split()
         for term in terms:
             conditions.append(
@@ -71,7 +72,7 @@ def loadItems(
         .execute(query)
         .scalars()
         .all()
-    )
+    )    
     return items, rowsCount
 
 def updateItem(
@@ -80,22 +81,38 @@ def updateItem(
         newCategory : str,
         supplierIds : list[str] = None
     ):
-    
     item = findItemById(itemId)
+
+    if not item:
+        return None
+
     item.name = newName
     item.category = newCategory
 
     if supplierIds is not None:
         item.suppliers = loadSuppliers(supplierIds)
 
-    session.add(item)
-    session.commit()
-    return item
+    try:
+        session.add(item)
+        session.commit()
+        return item
+    except:
+        session.rollback()
+        raise
 
 def deleteItem(itemId : str):
     item = findItemById(itemId)
-    session.delete(item)
-    session.commit()
+
+    if not item:
+        return False
+
+    try:
+        session.delete(item)
+        session.commit()
+        return True
+    except:
+        session.rollback()
+        raise
 
 def loadSuppliers(supplierIds : list[str]):
     return (

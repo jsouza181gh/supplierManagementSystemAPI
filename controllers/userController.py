@@ -44,11 +44,6 @@ def login():
         validLogin.email,
         validLogin.password
     )
-    
-    if validatedToken[1] in [401, 404]:
-        errorMessage, errorCode = validatedToken
-        return jsonify(errorMessage), errorCode
-    
     return jsonify(acessToken=validatedToken), 200
 
 @userBlueprint.route("/", methods=["GET"])

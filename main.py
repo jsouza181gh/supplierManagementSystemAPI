@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from controllers import blueprints
 from database import createDataBase
-from flask import Flask
+from flask import Flask, jsonify
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
@@ -19,6 +19,13 @@ jwt = JWTManager(app)
 
 for blueprint in blueprints:
     app.register_blueprint(blueprint)
+
+@app.errorhandler(Exception)
+def handle_exceptions(e):
+    if hasattr(e, "status_code"):
+        return jsonify({"error": str(e)}), e.status_code
+    
+    return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == "__main__":
     createDataBase()

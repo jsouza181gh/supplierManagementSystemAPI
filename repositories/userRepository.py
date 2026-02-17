@@ -13,9 +13,13 @@ def createUser(
         email = newEmail,
         password = newPassword
     )
-    session.add(newUser)
-    session.commit()
-    return newUser
+    try:
+        session.add(newUser)
+        session.commit()
+        return newUser
+    except:
+        session.rollback()
+        raise
 
 def findUserById(userId : str):
     user = (
@@ -43,17 +47,34 @@ def updateUser(
         newPassword : str
     ):
     user = findUserById(userId)
+
+    if not user:
+        return None
+
     user.name = newName
     user.lastName = newLastName
     user.email = newEmail
     user.password = newPassword
 
-    session.add(user)
-    session.commit()
-    return user
+    try:
+        session.add(user)
+        session.commit()
+        return user
+    except:
+        session.rollback()
+        raise
 
 
 def deleteUser(userId : str):
     user = findUserById(userId)
-    session.delete(user)
-    session.commit()
+
+    if not user:
+        return False
+
+    try:
+        session.delete(user)
+        session.commit()
+        return True
+    except:
+        session.rollback()
+        raise

@@ -24,13 +24,16 @@ def createSupplier(
         site = newSite,
         description = newDescription
     )
-
     if itemIds:
         newSupplier.items = loadItems(itemIds)
 
-    session.add(newSupplier)
-    session.commit()
-    return newSupplier
+    try:
+        session.add(newSupplier)
+        session.commit()
+        return newSupplier
+    except:
+        session.rollback()
+        raise
 
 def findSupplierById(supplierId : str):
     supplier = (
@@ -84,8 +87,11 @@ def updateSupplier(
         isPreferred : bool,
         itemIds : list[str] = None
     ):
-    
     supplier = findSupplierById(supplierId)
+
+    if not supplier:
+        return None
+    
     supplier.name = newName
     supplier.cnpj = newCnpj
     supplier.location = newLocation
@@ -99,14 +105,27 @@ def updateSupplier(
     if itemIds:
         supplier.items = loadItems(itemIds)
 
-    session.add(supplier)
-    session.commit()
-    return supplier
+    try:
+        session.add(supplier)
+        session.commit()
+        return supplier
+    except:
+        session.rollback()
+        raise
 
 def deleteSupplier(supplierId : str):
     supplier = findSupplierById(supplierId)
-    session.delete(supplier)
-    session.commit()
+
+    if not supplier:
+        return False
+    
+    try:
+        session.delete(supplier)
+        session.commit()
+        return True
+    except:
+        session.rollback()
+        raise
 
 def loadItems(itemIds : list[str]):
     return (

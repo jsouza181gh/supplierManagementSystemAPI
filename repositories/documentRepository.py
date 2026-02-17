@@ -1,5 +1,7 @@
 from database import session
 from entities.document import Document
+from repositories.supplierRopository import findSupplierById
+from exceptions import NotFoundException
 
 def createDocument(
         name : str,
@@ -7,15 +9,22 @@ def createDocument(
         category : str,
         supplierId : str
     ):
+    if not findSupplierById(supplierId):
+        raise NotFoundException("No matches to supplier ID")
+    
     newDocument = Document(
         name,
         path,
         category,
         supplierId
     )
-    session.add(newDocument)
-    session.commit()
-    return newDocument
+    try:
+        session.add(newDocument)
+        session.commit()
+        return newDocument
+    except:
+        session.rollback()
+        raise
 
 def findDocumentById(documentId : str):
     document = (
@@ -42,15 +51,31 @@ def updateDocument(
         category : str
     ):
     document = findDocumentById(documentId)
+
+    if not document:
+        return None
+        
     document.name = name
     document.path = path
     document.category = category
-    
-    session.add(document)
-    session.commit()
-    return document
+    try:    
+        session.add(document)
+        session.commit()
+        return document
+    except:
+        session.rollback()
+        raise
 
 def deleteDocument(documentId : str):
     document = findDocumentById(documentId)
-    session.delete(document)
-    session.commit()
+
+    if not document:
+        return False
+    
+    try:    
+        session.delete(document)
+        session.commit()
+        return True
+    except:
+        session.rollback()
+        raise
