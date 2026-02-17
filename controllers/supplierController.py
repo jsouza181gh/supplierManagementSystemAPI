@@ -30,7 +30,11 @@ def getSupplier(supplierId):
 @supplierBlueprint.route("/", methods=["GET"])
 @jwt_required()
 def loadSuppliers():
-    suppliers = supplierService.loadSuppliers()
+    params = request.args
+    suppliers = supplierService.loadSuppliers(
+        int(params.get("page", 1)),
+        int(params.get("limit", 10)),
+    )
     return jsonify(suppliers), 200
 
 @supplierBlueprint.route("/<supplierId>", methods=["PUT"])
