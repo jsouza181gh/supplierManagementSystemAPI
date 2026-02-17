@@ -1,8 +1,21 @@
-from flask import Flask
+import os
+from dotenv import load_dotenv
 from controllers import blueprints
 from database import createDataBase
+from flask import Flask
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
+
+load_dotenv()
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+JWT_EXPIRE_TIME = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES"))
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=JWT_EXPIRE_TIME)
+jwt = JWTManager(app)
 
 for blueprint in blueprints:
     app.register_blueprint(blueprint)

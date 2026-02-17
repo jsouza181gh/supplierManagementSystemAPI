@@ -1,9 +1,11 @@
-from flask import Blueprint, request, jsonify
 from services import supplierService
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 
-supplierBlueprint = Blueprint("supplier", __name__, url_prefix="/api/suppliers")
+supplierBlueprint = Blueprint("supplier", __name__, url_prefix="/suppliers")
 
 @supplierBlueprint.route("/", methods=["POST"])
+@jwt_required()
 def createSupplier():
     requestData = request.get_json()
     newSupplier = supplierService.createSupplier(
@@ -20,16 +22,19 @@ def createSupplier():
     return jsonify(newSupplier), 201
 
 @supplierBlueprint.route("/<supplierId>", methods=["GET"])
+@jwt_required()
 def getSupplier(supplierId):
     supplier = supplierService.findSupplierById(supplierId)
     return jsonify(supplier), 200
 
 @supplierBlueprint.route("/", methods=["GET"])
+@jwt_required()
 def loadSuppliers():
     suppliers = supplierService.loadSuppliers()
     return jsonify(suppliers), 200
 
 @supplierBlueprint.route("/<supplierId>", methods=["PUT"])
+@jwt_required()
 def updateSupplier(supplierId):
     requestData = request.get_json()
     supplier = supplierService.updateSupplier(
@@ -49,6 +54,7 @@ def updateSupplier(supplierId):
 
 
 @supplierBlueprint.route("/<supplierId>", methods=["DELETE"])
+@jwt_required()
 def deleteSupplier(supplierId):
     supplierService.deleteSupplier(supplierId)
     return "", 204

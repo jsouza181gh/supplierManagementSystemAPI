@@ -26,6 +26,15 @@ def findUserById(userId : str):
     )
     return user
 
+def findUserByEmail(userEmail : str):
+    user = (
+        session
+        .query(User)
+        .filter_by(email=userEmail)
+        .first()
+    )
+    return user
+
 def updateUser(
         userId : str,
         newName : str,
