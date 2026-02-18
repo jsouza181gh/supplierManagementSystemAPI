@@ -7,7 +7,7 @@ def createDocument(
         name : str,
         path : str,
         category : str,
-        supplierId : str    
+        supplierId : str  
     ):
     try:
         newDocument = documentRepository.createDocument(
@@ -74,9 +74,10 @@ def createDTO(document):
     return {
         "id" : str(document.id),
         "name" : document.name,
-        "path" : document.path,
+        "path" : str(document.path),
         "category" : document.category,
-        "created_at" : document.createdAt.isoformat()
+        "created_at" : document.createdAt.isoformat(),
+        "supplierId" : str(document.supplierId)
     }
 
 def isValidId(id: str):
