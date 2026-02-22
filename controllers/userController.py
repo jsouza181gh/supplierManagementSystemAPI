@@ -25,7 +25,7 @@ def createUser():
         validUser.email,
         validUser.password
     )
-    return jsonify(acessToken=newAcessToken), 201
+    return jsonify(accessToken=newAcessToken), 201
 
 @userBlueprint.route("/login", methods=["POST"])
 def login():
@@ -44,7 +44,7 @@ def login():
         validLogin.email,
         validLogin.password
     )
-    return jsonify(acessToken=validatedToken), 200
+    return jsonify(accessToken=validatedToken), 200
 
 @userBlueprint.route("/", methods=["GET"])
 @jwt_required()
