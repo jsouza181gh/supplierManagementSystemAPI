@@ -25,7 +25,7 @@ class SupplierSchema(BaseModel):
     @field_validator("phoneNumber")
     @classmethod
     def validate_phone(cls, value):
-        pattern = r"^\d{2} \d{5}-\d{4}$"
+        pattern = r"^\d{2} \d{5}-\d{4}( / \d{2} \d{5}-\d{4})*$"
         if not re.match(pattern, value):
             raise ValueError("Phone must be in format 00 00000-0000")
         return value

@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from waitress import serve
 
 load_dotenv()
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
@@ -31,4 +32,4 @@ def handle_exceptions(e):
 
 if __name__ == "__main__":
     createDataBase()
-    app.run(debug=True, threaded=True)
+    serve(app, host="0.0.0.0", port=5000)
